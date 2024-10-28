@@ -61,6 +61,10 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation ("androidx.compose.material3:material3:1.1.0") // or latest stable
     implementation("androidx.compose.ui:ui-tooling-preview:1.6.8")
+    //retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.6.4")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
