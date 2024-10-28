@@ -158,6 +158,7 @@ class MainActivity : ComponentActivity() {
                     .background(Color(0xFFE0E0E0), shape = RoundedCornerShape(2.dp)), // Fondo gris con esquinas redondeadas
                 shape = RoundedCornerShape(2.dp), // Asegúrate de que esto coincida con el fondo
                 colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color(0xFFE0E0E0),
                     focusedIndicatorColor = Color.Transparent, // Sin indicador al enfocar
                     unfocusedIndicatorColor = Color.Transparent // Sin indicador al no enfocar
                 )

@@ -28,6 +28,10 @@
         <activity android:name=".visita" />
         <activity android:name=".Perfil_instructor" />
         <activity android:name=".Notificaciones" />
+        <activity android:name=".Email" />
+        <activity android:name=".Redactar" />
+
+
     </application>
 
 </manifest>

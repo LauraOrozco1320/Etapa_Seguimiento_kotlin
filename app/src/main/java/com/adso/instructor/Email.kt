@@ -1,9 +1,11 @@
 package com.adso.instructor
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,14 +20,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -45,7 +43,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-class Notificaciones: ComponentActivity() {
+@Suppress("DEPRECATION")
+class Email : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -65,7 +64,7 @@ class Notificaciones: ComponentActivity() {
             HeaderSection()
             NotificationBar()
             SearchBar()
-            EmailList()
+            NotificationScreen()
         }
     }
 
@@ -120,7 +119,7 @@ class Notificaciones: ComponentActivity() {
                     .size(45.dp)
                     .clickable {
                         // Acción al hacer clic en la imagen (Ej: navegar a otra actividad)
-                        startActivity(Intent(this@Notificaciones, Perfil_instructor::class.java))
+                        startActivity(Intent(this@Email, Perfil_instructor::class.java))
                     }
             )
         }
@@ -144,123 +143,95 @@ class Notificaciones: ComponentActivity() {
             )
         }
     }
-
-
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun SearchBar() {
+        var searchText by remember { mutableStateOf("") }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 16.dp, vertical = 8.dp), // Asegúrate de que el padding no sea muy grande
+            horizontalArrangement = Arrangement.Start // Cambiado de SpaceBetween a Start para reducir el espacio
         ) {
-            // Ícono desplegable a la izquierda del campo de búsqueda
-            IconButton(onClick = { /* Acción del desplegable */ }) {
+            IconButton(onClick = { finish() }) {
                 Image(
-                    painter = painterResource(id = R.drawable.menu1),
-                    contentDescription = "User Icon",
-                    modifier = Modifier.size(45.dp)
+                    painter = painterResource(id = R.drawable.flecha),
+                    contentDescription = "Flecha",
+                    modifier = Modifier.size(20.dp)
                 )
             }
 
-            // Campo de búsqueda
-            TextField(
-                value = "",
-                onValueChange = {},
-                placeholder = { Text("Buscar...") },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 6.dp, end = 6.dp) // Añade espacio a los lados del TextField
-                    .background(Color(0xFFE0E0E0), shape = RoundedCornerShape(2.dp)), // Fondo gris con esquinas redondeadas
-                shape = RoundedCornerShape(16.dp), // Ajusta el tamaño de los bordes redondeados
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color(0xFFE0E0E0),
-                    focusedIndicatorColor = Color.Transparent, // Sin indicador al enfocar
-                    unfocusedIndicatorColor = Color.Transparent // Sin indicador al no enfocar
-                )
-            )
-
-            // Botón de redactar
-            IconButton(
-                onClick = { // Acción al hacer clic en la imagen (Ej: navegar a otra actividad)
-                    startActivity(Intent(this@Notificaciones, Redactar::class.java)) },
-                modifier = Modifier.size(25.dp) // Tamaño del icono
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.mas),
-                    contentDescription = "User Icon",
-                    modifier = Modifier.size(45.dp)
-                )
-            }
+            Spacer(modifier = Modifier.width(6.dp)) // Ajusta este espaciador a un valor más pequeño si hay mucho espacio
         }
     }
-
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun EmailList() {
-        var selectedTab by remember { mutableStateOf("Recibidos") }
-
+    fun NotificationScreen() {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            // Fila para el botón de Redactar y las pestañas
-
-            LazyColumn {
-                items(7) {
-                    EmailItem(
-                        title = "Título de la Notificación",
-                        subject = "Asunto de la Notificación",
-                        date = "Fecha"
-                    )
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun EmailItem(title: String, subject: String, date: String) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .border(
-                    width = 1.dp,
-                    color = Color.Black,
-                    shape = RoundedCornerShape(2.dp) // Esquinas ligeramente redondeadas
-                )
-                .clickable {  // Acción al hacer clic en la imagen (Ej: navegar a otra actividad)
-                    startActivity(Intent(this@Notificaciones, Email::class.java)) }
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
+            // Contenedor principal
             Column(
-                modifier = Modifier.weight(1f) // Para que ocupe el espacio disponible
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(500.dp)
+                    .border(2.dp, Color.Gray, RoundedCornerShape(8.dp))
+                    .background(Color.White)
+                    .padding(16.dp)
             ) {
-                Text(title, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                Text(subject, color = Color.Gray, fontSize = 12.sp)
-                Text(date, color = Color.Gray, fontSize = 11.sp)
-            }
+                // Información de email
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.icon_email), // Usa tu imagen
+                        contentDescription = "Email Icon",
+                        modifier = Modifier.size(40.dp)
+                    )
 
-            // Imagen como botón
-            IconButton(onClick = { /* Acción al hacer clic en la imagen */ }) {
-                Image(
-                    painter = painterResource(id = R.drawable.papelera),
-                    contentDescription = "User Icon",
-                    modifier = Modifier.size(24.dp)
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Column {
+                        Text(text = "Asunto: xxxxxx", fontSize = 16.sp)
+                        Text(text = "Para: xxxxxx", fontSize = 16.sp)
+                    }
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Text(text = "Fecha: xxxxxxxx", fontSize = 12.sp)
+                }
+
+                // Descripción
+                Text(text = "Descripción", fontSize = 16.sp, modifier = Modifier.padding(bottom = 8.dp))
+
+                // Área de texto sin fondo gris
+                TextField(
+                    value = "",
+                    onValueChange = { /* Actualizar valor */ },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .padding(4.dp),
+
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Color(0xFFE0E0E0), // Sin fondo en el área editable
+                        unfocusedIndicatorColor = Color.Transparent, // Línea inferior oculta cuando no está enfocado
+                        focusedIndicatorColor = Color.Transparent // Línea inferior oculta cuando está enfocado
+                    ),
+                    shape = RoundedCornerShape(2.dp)
                 )
             }
         }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     @Preview(showBackground = true)
     @Composable
     fun DefaultPreview() {
         MainScreen()
     }
 }
-
-
-
-

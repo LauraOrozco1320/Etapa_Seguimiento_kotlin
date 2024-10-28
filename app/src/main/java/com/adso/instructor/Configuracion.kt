@@ -1,15 +1,18 @@
 package com.adso.instructor
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,17 +21,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,16 +39,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-class Notificaciones: ComponentActivity() {
+
+class Configuracion : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -65,7 +71,8 @@ class Notificaciones: ComponentActivity() {
             HeaderSection()
             NotificationBar()
             SearchBar()
-            EmailList()
+            SettingsScreen()
+
         }
     }
 
@@ -120,7 +127,7 @@ class Notificaciones: ComponentActivity() {
                     .size(45.dp)
                     .clickable {
                         // Acción al hacer clic en la imagen (Ej: navegar a otra actividad)
-                        startActivity(Intent(this@Notificaciones, Perfil_instructor::class.java))
+                        startActivity(Intent(this@Configuracion, Perfil_instructor::class.java))
                     }
             )
         }
@@ -144,123 +151,114 @@ class Notificaciones: ComponentActivity() {
             )
         }
     }
-
-
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun SearchBar() {
+        var searchText by remember { mutableStateOf("") }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 16.dp, vertical = 8.dp), // Asegúrate de que el padding no sea muy grande
+            horizontalArrangement = Arrangement.Start // Cambiado de SpaceBetween a Start para reducir el espacio
         ) {
-            // Ícono desplegable a la izquierda del campo de búsqueda
-            IconButton(onClick = { /* Acción del desplegable */ }) {
+            IconButton(onClick = { finish() }) {
                 Image(
-                    painter = painterResource(id = R.drawable.menu1),
-                    contentDescription = "User Icon",
-                    modifier = Modifier.size(45.dp)
+                    painter = painterResource(id = R.drawable.flecha),
+                    contentDescription = "Flecha",
+                    modifier = Modifier.size(20.dp)
                 )
             }
 
-            // Campo de búsqueda
-            TextField(
-                value = "",
-                onValueChange = {},
-                placeholder = { Text("Buscar...") },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 6.dp, end = 6.dp) // Añade espacio a los lados del TextField
-                    .background(Color(0xFFE0E0E0), shape = RoundedCornerShape(2.dp)), // Fondo gris con esquinas redondeadas
-                shape = RoundedCornerShape(16.dp), // Ajusta el tamaño de los bordes redondeados
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color(0xFFE0E0E0),
-                    focusedIndicatorColor = Color.Transparent, // Sin indicador al enfocar
-                    unfocusedIndicatorColor = Color.Transparent // Sin indicador al no enfocar
-                )
-            )
-
-            // Botón de redactar
-            IconButton(
-                onClick = { // Acción al hacer clic en la imagen (Ej: navegar a otra actividad)
-                    startActivity(Intent(this@Notificaciones, Redactar::class.java)) },
-                modifier = Modifier.size(25.dp) // Tamaño del icono
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.mas),
-                    contentDescription = "User Icon",
-                    modifier = Modifier.size(45.dp)
-                )
-            }
+            Spacer(modifier = Modifier.width(6.dp)) // Ajusta este espaciador a un valor más pequeño si hay mucho espacio
         }
     }
-
     @Composable
-    fun EmailList() {
-        var selectedTab by remember { mutableStateOf("Recibidos") }
+    fun SettingsScreen() {
+        // Estado para almacenar las contraseñas
+        var currentPassword by remember { mutableStateOf("") }
+        var newPassword by remember { mutableStateOf("") }
+        var confirmPassword by remember { mutableStateOf("") }
 
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+                .fillMaxSize()
+                .padding(16.dp)
+                .background(Color.White) // Fondo similar al de la página web
+                .verticalScroll(rememberScrollState()) // Permite desplazamiento
         ) {
-            // Fila para el botón de Redactar y las pestañas
-
-            LazyColumn {
-                items(7) {
-                    EmailItem(
-                        title = "Título de la Notificación",
-                        subject = "Asunto de la Notificación",
-                        date = "Fecha"
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .border(1.dp, Color.Gray, shape = MaterialTheme.shapes.medium),
+                elevation = CardDefaults.elevatedCardElevation(4.dp) // Eleva la tarjeta
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Configuración",
+                        fontSize = 24.sp, // Tamaño del encabezado
+                        modifier = Modifier.padding(bottom = 16.dp)
                     )
+
+                    // Sección de Cambio de Contraseña
+                    Text(
+                        text = "Cambio de Contraseña",
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    // Campo para Contraseña Actual
+                    TextField(
+                        value = currentPassword,
+                        onValueChange = { currentPassword = it },
+                        label = { Text("Contraseña Actual") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    // Campo para Nueva Contraseña
+                    TextField(
+                        value = newPassword,
+                        onValueChange = { newPassword = it },
+                        label = { Text("Nueva Contraseña") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    // Campo para Confirmar Nueva Contraseña
+                    TextField(
+                        value = confirmPassword,
+                        onValueChange = { confirmPassword = it },
+                        label = { Text("Confirmar Nueva Contraseña") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    // Botón de Actualizar Contraseña
+                    Button(
+                        onClick = {
+                            // Lógica para actualizar la contraseña
+                            // Aquí podrías agregar la lógica para validar y enviar la nueva contraseña
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF009e00) // Color verde
+                        ),
+                    ) {
+                        Text("Actualizar Contraseña", color = Color.White)
+                    }
                 }
             }
         }
     }
 
-    @Composable
-    fun EmailItem(title: String, subject: String, date: String) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .border(
-                    width = 1.dp,
-                    color = Color.Black,
-                    shape = RoundedCornerShape(2.dp) // Esquinas ligeramente redondeadas
-                )
-                .clickable {  // Acción al hacer clic en la imagen (Ej: navegar a otra actividad)
-                    startActivity(Intent(this@Notificaciones, Email::class.java)) }
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(
-                modifier = Modifier.weight(1f) // Para que ocupe el espacio disponible
-            ) {
-                Text(title, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                Text(subject, color = Color.Gray, fontSize = 12.sp)
-                Text(date, color = Color.Gray, fontSize = 11.sp)
-            }
-
-            // Imagen como botón
-            IconButton(onClick = { /* Acción al hacer clic en la imagen */ }) {
-                Image(
-                    painter = painterResource(id = R.drawable.papelera),
-                    contentDescription = "User Icon",
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-        }
-    }
+    @RequiresApi(Build.VERSION_CODES.O)
     @Preview(showBackground = true)
     @Composable
     fun DefaultPreview() {
         MainScreen()
     }
+
 }
-
-
-
-
