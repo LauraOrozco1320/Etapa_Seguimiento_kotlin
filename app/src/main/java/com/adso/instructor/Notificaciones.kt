@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,10 +19,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -113,16 +118,70 @@ class Notificaciones: ComponentActivity() {
 
             Spacer(modifier = Modifier.weight(1f))
 
+            UserIconMenu()
+
+        }
+    }
+    @Composable
+    fun UserIconMenu() {
+        var expanded by remember { mutableStateOf(false) }
+        val context = LocalContext.current
+
+        // Datos de usuario (reemplazar por datos reales si es necesario)
+        val userName = "Laura Orozco" // Nombre del usuario
+        val userRole = "Instructor" // Rol del usuario
+
+        Box(modifier = Modifier.wrapContentSize(Alignment.TopEnd)) {
             Image(
                 painter = painterResource(id = R.drawable.mujer),
                 contentDescription = "User Icon",
                 modifier = Modifier
                     .size(45.dp)
-                    .clickable {
-                        // Acción al hacer clic en la imagen (Ej: navegar a otra actividad)
-                        startActivity(Intent(this@Notificaciones, Perfil_instructor::class.java))
-                    }
+                    .clickable { expanded = true } // Abre el menú al hacer clic
             )
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false } // Cierra el menú al hacer clic fuera
+            ) {
+                // Añadir nombre y rol en la parte superior del menú
+                Column(
+                    modifier = Modifier.padding(16.dp) // Espaciado en la cabecera del menú
+                ) {
+                    Text(text = userName, style = MaterialTheme.typography.titleMedium)
+                    Text(text = userRole, style = MaterialTheme.typography.bodyMedium)
+                }
+
+                // Elementos del menú
+                DropdownMenuItem(
+                    text = { Text("Ver perfil") },
+                    onClick = {
+                        expanded = false
+                        context.startActivity(Intent(context, Perfil_instructor::class.java))
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Aprendices") },
+                    onClick = {
+                        expanded = false
+                        context.startActivity(Intent(context, Perfil_Aprendiz::class.java))
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Configuración") },
+                    onClick = {
+                        expanded = false
+                        context.startActivity(Intent(context, Configuracion::class.java))
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Cerrar sesión") },
+                    onClick = {
+                        expanded = false
+                        // Acción para cerrar sesión
+                    }
+                )
+            }
         }
     }
 

@@ -3,6 +3,7 @@ package com.adso.instructor
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,6 +33,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -46,6 +50,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -81,14 +86,20 @@ class Bitacora : ComponentActivity() {
             Spacer(modifier = Modifier.height(16.dp)) // Añadir espacio
             NotificationBar()
             Spacer(modifier = Modifier.height(16.dp)) // Añadir espacio
-            SearchBar()
-            Spacer(modifier = Modifier.height(16.dp)) // Añadir espacio
             EtapaSeguimientoScreen()
+            RegistroScreen()
         }
     }
 
     @Composable
     fun HeaderSection() {
+        // Estado para manejar el menú desplegable
+        var expanded by remember { mutableStateOf(false) }
+
+        // Contenido del menú desplegable
+        val options = listOf("Opción 1", "Opción 2", "Opción 3")
+        val context = LocalContext.current // Obtener el contexto
+
         Row(
             modifier = Modifier
                 .padding(16.dp)
@@ -131,16 +142,70 @@ class Bitacora : ComponentActivity() {
 
             Spacer(modifier = Modifier.weight(1f))
 
+            UserIconMenu()
+
+        }
+    }
+    @Composable
+    fun UserIconMenu() {
+        var expanded by remember { mutableStateOf(false) }
+        val context = LocalContext.current
+
+        // Datos de usuario (reemplazar por datos reales si es necesario)
+        val userName = "Laura Orozco" // Nombre del usuario
+        val userRole = "Instructor" // Rol del usuario
+
+        Box(modifier = Modifier.wrapContentSize(Alignment.TopEnd)) {
             Image(
                 painter = painterResource(id = R.drawable.mujer),
                 contentDescription = "User Icon",
                 modifier = Modifier
                     .size(45.dp)
-                    .clickable {
-                        // Acción al hacer clic en la imagen (Ej: navegar a otra actividad)
-                        startActivity(Intent(this@Bitacora, Perfil_instructor::class.java))
-                    }
+                    .clickable { expanded = true } // Abre el menú al hacer clic
             )
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false } // Cierra el menú al hacer clic fuera
+            ) {
+                // Añadir nombre y rol en la parte superior del menú
+                Column(
+                    modifier = Modifier.padding(16.dp) // Espaciado en la cabecera del menú
+                ) {
+                    Text(text = userName, style = MaterialTheme.typography.titleMedium)
+                    Text(text = userRole, style = MaterialTheme.typography.bodyMedium)
+                }
+
+                // Elementos del menú
+                DropdownMenuItem(
+                    text = { Text("Ver perfil") },
+                    onClick = {
+                        expanded = false
+                        context.startActivity(Intent(context, Perfil_instructor::class.java))
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Aprendices") },
+                    onClick = {
+                        expanded = false
+                        context.startActivity(Intent(context, Lista_Aprendiz::class.java))
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Configuración") },
+                    onClick = {
+                        expanded = false
+                        context.startActivity(Intent(context, Configuracion::class.java))
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Cerrar sesión") },
+                    onClick = {
+                        expanded = false
+                        // Acción para cerrar sesión
+                    }
+                )
+            }
         }
     }
 
@@ -150,7 +215,7 @@ class Bitacora : ComponentActivity() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp)
-                .background(Color(0xFF009E00)), // Verde
+                .background(Color(0xFF009e00)), // Verde
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End
         ) {
@@ -165,28 +230,6 @@ class Bitacora : ComponentActivity() {
                 colorFilter = ColorFilter.tint(Color.White)
 
             )
-        }
-    }
-
-    @Composable
-    fun SearchBar() {
-        var searchText by remember { mutableStateOf("") }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp), // Asegúrate de que el padding no sea muy grande
-            horizontalArrangement = Arrangement.Start // Cambiado de SpaceBetween a Start para reducir el espacio
-        ) {
-            IconButton(onClick = { finish() }) {
-                Image(
-                    painter = painterResource(id = R.drawable.flecha),
-                    contentDescription = "Flecha",
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(8.dp)) // Ajusta este espaciador a un valor más pequeño si hay mucho espacio
         }
     }
 
@@ -207,7 +250,15 @@ class Bitacora : ComponentActivity() {
         var observaciones by remember { mutableStateOf(TextFieldValue()) }
         var descripcion by remember { mutableStateOf(TextFieldValue()) }
 
-
+        // Título "Visita"
+        Text(
+            text = "BITACORA",
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), // Negrilla añadida
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            textAlign = TextAlign.Center
+        )
 
         Column(
             modifier = Modifier
@@ -391,16 +442,39 @@ class Bitacora : ComponentActivity() {
                 }
             }
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(0.5.dp))
 
+        }
+    }
+    @Composable
+    fun RegistroScreen() {
+        var mensajeRegistro by remember { mutableStateOf("") }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .background(Color.White)
+        ) {
+            // Botón de registrar
             Button(
-                onClick = { /* Acción al registrar */ },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00C853)),
+                onClick = { mensajeRegistro = "Bitácora registrada" }, // Acción al registrar
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF009e00)),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(35.dp)
             ) {
                 Text("REGISTRAR", color = Color.White, fontWeight = FontWeight.Bold)
+            }
+
+            // Mostrar el mensaje si no está vacío
+            if (mensajeRegistro.isNotEmpty()) {
+                Text(
+                    text = mensajeRegistro,
+                    color = Color(0xFF009e00),
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
             }
         }
     }

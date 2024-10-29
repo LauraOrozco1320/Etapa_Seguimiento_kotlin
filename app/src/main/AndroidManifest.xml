@@ -14,7 +14,7 @@
         android:theme="@style/Theme.EtapaSeguimiento"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".Lista_Aprendiz"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.EtapaSeguimiento">
@@ -31,6 +31,7 @@
         <activity android:name=".Notificaciones" />
         <activity android:name=".Email" />
         <activity android:name=".Redactar" />
+        <activity android:name=".Configuracion" />
 
 
     </application>
