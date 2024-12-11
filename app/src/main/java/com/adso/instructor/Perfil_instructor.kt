@@ -1,5 +1,6 @@
 package com.adso.instructor
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -157,6 +158,13 @@ class Perfil_instructor : ComponentActivity() {
                     }
                 )
                 DropdownMenuItem(
+                    text = { Text("Calendario") },
+                    onClick = {
+                        expanded = false
+                        context.startActivity(Intent(context, Calendar::class.java))
+                    }
+                )
+                DropdownMenuItem(
                     text = { Text("Configuración") },
                     onClick = {
                         expanded = false
@@ -200,23 +208,44 @@ class Perfil_instructor : ComponentActivity() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun InstructorInfo() {
+        var isEditing by remember { mutableStateOf(false) } // Estado de edición
+        var nombres by remember { mutableStateOf("Mariani") }
+        var apellidos by remember { mutableStateOf("Dorado") }
+        var telefono by remember { mutableStateOf("3132545658") }
+        var correo by remember { mutableStateOf("marianodorado@gmail.com") }
+        var fechaNacimiento by remember { mutableStateOf("") }
+        var horasSeguimiento by remember { mutableStateOf("") }
+        var mes by remember { mutableStateOf("") }
+        var aprendicesAsignados by remember { mutableStateOf("") }
+
+        // Función de actualización
+        fun actualizarDatos() {
+            // Aquí se podría agregar la lógica para actualizar los datos, por ejemplo, guardar en un repositorio
+            println("Datos Actualizados:")
+            println("Nombres: $nombres")
+            println("Apellidos: $apellidos")
+            println("Teléfono: $telefono")
+            println("Correo: $correo")
+            println("Fecha de Nacimiento: $fechaNacimiento")
+            println("Horas Seguimiento: $horasSeguimiento")
+            println("Mes: $mes")
+            println("Aprendices Asignados: $aprendicesAsignados")
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
                 .background(Color(0xFFE0E0E0), shape = MaterialTheme.shapes.medium)
-                .border(
-                    width = 2.dp, // Grosor del borde
-                    color = Color.Black, // Color del borde negro
-                    shape = RoundedCornerShape(2.dp) // Esquinas redondeadas de 2 dp
-                )
+                .border(2.dp, Color.Black, shape = RoundedCornerShape(2.dp))
                 .padding(16.dp)
         ) {
-            // Icono del instructor
+            // Imagen de Instructor
             Image(
-                painter = painterResource(id = R.drawable.mujer),
+                painter = painterResource(id = R.drawable.mujer), // Reemplaza con tu imagen
                 contentDescription = "Instructor Icon",
                 modifier = Modifier
                     .size(100.dp)
@@ -232,80 +261,79 @@ class Perfil_instructor : ComponentActivity() {
             )
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Sección de información básica
             Text(text = "Datos básicos", fontWeight = FontWeight.Bold, fontSize = 18.sp)
             Spacer(modifier = Modifier.height(10.dp))
-            InfoItem(label = "Nombres:", value = "Mariani")
-            InfoItem(label = "Apellidos:", value = "Dorado")
-            InfoItem(label = "Teléfono", value = "3132545658")
-            InfoItem(label = "Correo electrónico:", value = "marianodorado@gmail.com")
-            InfoItem(label = "Fecha De Nacimiento:", value = "")
 
+            // Campos editables si isEditing es true
+            InfoItem(label = "Nombres:", value = nombres, isEditing = isEditing) { nombres = it }
+            InfoItem(label = "Apellidos:", value = apellidos, isEditing = isEditing) { apellidos = it }
+            InfoItem(label = "Teléfono:", value = telefono, isEditing = isEditing) { telefono = it }
+            InfoItem(label = "Correo electrónico:", value = correo, isEditing = isEditing) { correo = it }
+            InfoItem(label = "Fecha De Nacimiento:", value = fechaNacimiento, isEditing = isEditing) { fechaNacimiento = it }
+
+            Spacer(modifier = Modifier.height(20.dp))
             Text(
                 text = "Información de Seguimiento",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
             )
             Spacer(modifier = Modifier.height(10.dp))
-            InfoItem(label = "Número de horas seguimiento:", value = "")
-            InfoItem(label = "Mes:", value = "")
-            InfoItem(label = "Número De Aprendices Asignados:", value = "")
 
-            Spacer(modifier = Modifier.height(20.dp))
+            // Campos de seguimiento
+            InfoItem(label = "Número de horas seguimiento:", value = horasSeguimiento, isEditing = isEditing) { horasSeguimiento = it }
+            InfoItem(label = "Mes:", value = mes, isEditing = isEditing) { mes = it }
+            InfoItem(label = "Número De Aprendices Asignados:", value = aprendicesAsignados, isEditing = isEditing) { aprendicesAsignados = it }
+
+            Spacer(modifier = Modifier.height(8.dp)) // Espacio antes del botón
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.Center
             ) {
-                // Botón Actualizar
                 Button(
-                    onClick = { /* Acción de Actualizar */ },
-                    modifier = Modifier.padding(4.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF009e00), // Fondo verde
-                        contentColor = Color.White          // Texto blanco
-                    )
+                    onClick = {
+                        if (isEditing) {
+                            // Guardar cambios al hacer clic en "Guardar"
+                            actualizarDatos()
+                        }
+                        isEditing = !isEditing // Cambiar entre editar y ver
+                    },
+                    modifier = Modifier.padding(8.dp),
+                    colors = ButtonDefaults.run { val buttonColors =
+                        buttonColors(Color(0xFF009E00))
+                        buttonColors
+                    }
                 ) {
-                    Text(text = "Actualizar")
-                }
-
-                // Espacio entre los botones
-                Spacer(modifier = Modifier.width(8.dp))
-
-                // Botón Cancelar
-                Button(
-                    onClick = { /* Acción de Cancelar */ },
-                    modifier = Modifier.padding(4.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Gray, // Fondo gris
-                        contentColor = Color.White  // Texto blanco
-                    )
-                ) {
-                    Text(text = "Cancelar")
+                    Text(text = if (isEditing) "Guardar" else "Actualizar", color = Color.White)
                 }
             }
         }
     }
 
     @Composable
-    fun InfoItem(label: String, value: String) {
+    fun InfoItem(label: String, value: String, isEditing: Boolean, onValueChange: (String) -> Unit) {
         Column(modifier = Modifier.padding(vertical = 4.dp)) {
             Text(text = label, fontWeight = FontWeight.Bold)
-            Text(
-                text = value,
-                fontSize = 16.sp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        Color.White,
-                        shape = RoundedCornerShape(8.dp)
-                    ) // Fondo blanco redondeado
-                    .border(
-                        1.dp,
-                        Color.Gray,
-                        shape = RoundedCornerShape(8.dp)
-                    ) // Borde gris redondeado
-                    .padding(8.dp)
-            )
+            if (isEditing) {
+                TextField(
+                    value = value,
+                    onValueChange = onValueChange,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White, shape = RoundedCornerShape(8.dp))
+                        .border(1.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
+                        .padding(8.dp)
+                )
+            } else {
+                Text(
+                    text = value,
+                    fontSize = 16.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White, shape = RoundedCornerShape(8.dp))
+                        .border(1.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
+                        .padding(8.dp)
+                )
+            }
         }
     }
 
@@ -316,5 +344,6 @@ class Perfil_instructor : ComponentActivity() {
         MainScreen()
     }
 }
+
 
 

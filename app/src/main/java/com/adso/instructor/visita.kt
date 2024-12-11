@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -176,6 +177,13 @@ class visita : ComponentActivity() {
                     }
                 )
                 DropdownMenuItem(
+                    text = { Text("Calendario") },
+                    onClick = {
+                        expanded = false
+                        context.startActivity(Intent(context, Calendar::class.java))
+                    }
+                )
+                DropdownMenuItem(
                     text = { Text("Configuración") },
                     onClick = {
                         expanded = false
@@ -225,11 +233,11 @@ class visita : ComponentActivity() {
         var identificacion by remember { mutableStateOf("10604335627") }
         var correo by remember { mutableStateOf("mariandiaz@gmail.com") }
         var empresa by remember { mutableStateOf("FREETIME") }
-        var visita by remember { mutableStateOf("2") }
+        var visita by remember { mutableStateOf("") }
         var fecha by remember { mutableStateOf(LocalDate.now().toString()) }
-        var jefe by remember { mutableStateOf("Juan Velazco Suarez") }
-        var telefono by remember { mutableStateOf("8234540") }
-        var correoJefe by remember { mutableStateOf("FreeTime@gmail.com") }
+        var jefe by remember {mutableStateOf("") }
+        var telefono by remember {mutableStateOf("") }
+        var correoJefe by remember {mutableStateOf("") }
         var modalidad by remember { mutableStateOf("Pasantía") }
         var observaciones by remember { mutableStateOf(TextFieldValue()) }
 
@@ -382,46 +390,49 @@ class visita : ComponentActivity() {
                     Spacer(Modifier.height(10.dp))
 
                     // Nombre del jefe inmediato
-                    Text("Nombre Del Jefe Inmediato/Responsable", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
+                    Text("Nombre Del Jefe Inmediato/Responsable", fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
                     Spacer(Modifier.height(4.dp))
-                    Text(
-                        jefe,
+                    BasicTextField(
+                        value = jefe,
+                        onValueChange = { jefe = it },
                         modifier = Modifier
-                            .fillMaxWidth()
                             .background(Color.White, RoundedCornerShape(8.dp)) // Fondo blanco redondeado
-                            .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)) // Borde gris redondeado
-                            .padding(8.dp),
-                        textAlign = TextAlign.Center // Centrar texto
+                            .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)) // Borde negro redondeado
+                            .padding(8.dp)
+                            .fillMaxWidth(),
+                        textStyle = TextStyle(textAlign = TextAlign.Center) // Centrar texto de entrada
                     )
 
                     Spacer(Modifier.height(7.dp))
 
                     // Teléfono de contacto
-                    Text("Teléfono De Contacto", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
+                    Text("Teléfono De Contacto", fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
                     Spacer(Modifier.height(4.dp))
-                    Text(
-                        telefono,
+                    BasicTextField(
+                        value = telefono,
+                        onValueChange = { telefono = it },
                         modifier = Modifier
-                            .fillMaxWidth()
                             .background(Color.White, RoundedCornerShape(8.dp)) // Fondo blanco redondeado
-                            .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)) // Borde gris redondeado
-                            .padding(8.dp),
-                        textAlign = TextAlign.Center // Centrar texto
+                            .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)) // Borde negro redondeado
+                            .padding(8.dp)
+                            .fillMaxWidth(),
+                        textStyle = TextStyle(textAlign = TextAlign.Center) // Centrar texto de entrada
                     )
 
                     Spacer(Modifier.height(7.dp))
 
                     // Correo electrónico
-                    Text("Correo Electrónico", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
+                    Text("Correo Electrnico", fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
                     Spacer(Modifier.height(4.dp))
-                    Text(
-                        correoJefe,
+                    BasicTextField(
+                        value = correoJefe,
+                        onValueChange = { correoJefe = it },
                         modifier = Modifier
-                            .fillMaxWidth()
                             .background(Color.White, RoundedCornerShape(8.dp)) // Fondo blanco redondeado
-                            .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)) // Borde gris redondeado
-                            .padding(8.dp),
-                        textAlign = TextAlign.Center // Centrar texto
+                            .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)) // Borde negro redondeado
+                            .padding(8.dp)
+                            .fillMaxWidth(),
+                        textStyle = TextStyle(textAlign = TextAlign.Center) // Centrar texto de entrada
                     )
                 }
             }
@@ -483,7 +494,7 @@ class visita : ComponentActivity() {
         ) {
             // Botón de registrar
             Button(
-                onClick = { mensajeRegistro = "VISITA registrada" }, // Acción al registrar
+                onClick = { mensajeRegistro = "Visita Registrada" }, // Acción al registrar
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF009e00)),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -492,13 +503,17 @@ class visita : ComponentActivity() {
                 Text("REGISTRAR", color = Color.White, fontWeight = FontWeight.Bold)
             }
 
-            // Mostrar el mensaje si no está vacío
+// Mostrar el mensaje si no está vacío
             if (mensajeRegistro.isNotEmpty()) {
                 Text(
                     text = mensajeRegistro,
                     color = Color(0xFF009e00),
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 16.dp)
+                    fontSize = 18.sp, // Aumentar tamaño de texto
+                    modifier = Modifier
+                        .padding(top = 20.dp)
+                        .fillMaxWidth() // Centra el texto en todo el ancho disponible
+                        .wrapContentWidth(Alignment.CenterHorizontally) // Centra el texto horizontalmente
                 )
             }
         }

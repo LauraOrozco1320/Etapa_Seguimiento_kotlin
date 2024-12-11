@@ -150,6 +150,13 @@ class Perfil_Aprendiz : ComponentActivity() {
                     }
                 )
                 DropdownMenuItem(
+                    text = { Text("Calendario") },
+                    onClick = {
+                        expanded = false
+                        context.startActivity(Intent(context, Calendar::class.java))
+                    }
+                )
+                DropdownMenuItem(
                     text = { Text("Configuración") },
                     onClick = {
                         expanded = false

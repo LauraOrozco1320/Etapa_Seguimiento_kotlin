@@ -3,7 +3,6 @@ package com.adso.instructor
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -14,7 +13,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,13 +30,10 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,18 +41,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.time.LocalDate
@@ -192,6 +183,13 @@ class Bitacora : ComponentActivity() {
                     }
                 )
                 DropdownMenuItem(
+                    text = { Text("Calendario") },
+                    onClick = {
+                        expanded = false
+                        context.startActivity(Intent(context, Calendar::class.java))
+                    }
+                )
+                DropdownMenuItem(
                     text = { Text("Configuración") },
                     onClick = {
                         expanded = false
@@ -240,17 +238,11 @@ class Bitacora : ComponentActivity() {
         var ficha by remember { mutableStateOf("2654013") }
         var identificacion by remember { mutableStateOf("10604335627") }
         var correo by remember { mutableStateOf("mariandiaz@gmail.com") }
-        var empresa by remember { mutableStateOf("FREETIME") }
-        var visita by remember { mutableStateOf("2") }
+        var selectedNumbers by remember { mutableStateOf(mutableSetOf<Int>()) }
         var fecha by remember { mutableStateOf(LocalDate.now().toString()) }
-        var jefe by remember { mutableStateOf("Juan Velazco Suarez") }
-        var telefono by remember { mutableStateOf("8234540") }
-        var correoJefe by remember { mutableStateOf("FreeTime@gmail.com") }
         var modalidad by remember { mutableStateOf("Pasantía") }
-        var observaciones by remember { mutableStateOf(TextFieldValue()) }
-        var descripcion by remember { mutableStateOf(TextFieldValue()) }
 
-        // Título "Visita"
+        // Título "Bitacora"
         Text(
             text = "BITACORA",
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), // Negrilla añadida
@@ -328,6 +320,11 @@ class Bitacora : ComponentActivity() {
 
             Spacer(Modifier.height(16.dp))
 
+            //bitacora
+
+            // Color seleccionado
+            val selectedColor = Color(0xFF009e00) // Color cuando está seleccionado
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -341,19 +338,41 @@ class Bitacora : ComponentActivity() {
                 ) {
                     // Números del 1 al 12 centrados
                     for (i in 1..12) {
-                        Text(
-                            text = i.toString(), // Mostrar el número en texto
-                            fontWeight = FontWeight.Bold, // Texto en negrita
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(Color.White) // Fondo blanco para cada número
+                                .height(48.dp) // Asegura que el Box tenga suficiente altura
+                                .background(
+                                    if (selectedNumbers.contains(i)) selectedColor else Color.White, // Fondo verde si está seleccionado, blanco si no lo está
+                                    RoundedCornerShape(8.dp)
+                                )
                                 .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)) // Borde gris
-                                .padding(8.dp) // Padding interno del cuadro de cada número
-                                .wrapContentWidth(Alignment.CenterHorizontally) // Centra el texto horizontalmente
-                        )
+                                .clickable {
+                                    // Si el número ya está seleccionado, lo deseleccionamos, si no, lo agregamos al conjunto
+                                    if (selectedNumbers.contains(i)) {
+                                        selectedNumbers =
+                                            (selectedNumbers - i) as MutableSet<Int> // Deseleccionar
+                                    } else {
+                                        selectedNumbers =
+                                            (selectedNumbers + i) as MutableSet<Int> // Seleccionar
+                                    }
+                                }
+                                .padding(8.dp) // Padding interno del cuadro
+                        ) {
+                            Text(
+                                text = i.toString(), // Mostrar el número en texto
+                                fontWeight = FontWeight.Bold, // Texto en negrita
+                                color = if (selectedNumbers.contains(i)) Color.White else Color.Black, // Texto blanco si está seleccionado
+                                modifier = Modifier
+                                    .fillMaxSize() // Asegura que el texto ocupe todo el espacio disponible
+                                    .wrapContentWidth(Alignment.CenterHorizontally) // Centra el texto horizontalmente
+                                    .wrapContentHeight(Alignment.CenterVertically) // Centra el texto verticalmente
+                            )
+                        }
                     }
                 }
             }
+//fin bitacora
 
             Spacer(Modifier.height(30.dp))
 
@@ -380,36 +399,6 @@ class Bitacora : ComponentActivity() {
 
                     Spacer(Modifier.height(16.dp))
 
-                    // Descripción De La Actividad
-                    Text("Descripcion De La Actividad", fontWeight = FontWeight.Bold)
-                    Spacer(Modifier.height(4.dp))
-                    BasicTextField(
-                        value = descripcion,
-                        onValueChange = { descripcion = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.White, RoundedCornerShape(4.dp))
-                            .border(1.dp, Color.Gray)
-                            .padding(12.dp),
-                        textStyle = TextStyle(fontSize = 14.sp, textAlign = TextAlign.Start)
-                    )
-
-                    Spacer(Modifier.height(16.dp))
-
-                    // Bitacoras
-                    Text("Bitacoras", fontWeight = FontWeight.Bold)
-                    Spacer(Modifier.height(4.dp))
-                    Button(
-                        onClick = { /* Acción para seleccionar archivo */ },
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)
-                    ) {
-                        Text(text = "Seleccionar archivo", color = Color.Black)
-                    }
-
-                    Spacer(Modifier.height(16.dp))
-
                     // Fecha
                     Text("Fecha", fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
                     Spacer(Modifier.height(4.dp))
@@ -426,24 +415,8 @@ class Bitacora : ComponentActivity() {
 
                     Spacer(Modifier.height(16.dp))
 
-                    // Observación/inactividad y/o Dificultades
-                    Text("Observación/inactividad y/o Dificultades", fontWeight = FontWeight.Bold)
-                    Spacer(Modifier.height(4.dp))
-                    BasicTextField(
-                        value = observaciones,
-                        onValueChange = { observaciones = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.White, RoundedCornerShape(4.dp))
-                            .border(1.dp, Color.Gray)
-                            .padding(12.dp),
-                        textStyle = TextStyle(fontSize = 14.sp, textAlign = TextAlign.Start)
-                    )
                 }
             }
-
-            Spacer(Modifier.height(0.5.dp))
-
         }
     }
     @Composable
@@ -458,7 +431,7 @@ class Bitacora : ComponentActivity() {
         ) {
             // Botón de registrar
             Button(
-                onClick = { mensajeRegistro = "Bitácora registrada" }, // Acción al registrar
+                onClick = { mensajeRegistro = "Bitácora Registrada" }, // Acción al registrar
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF009e00)),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -473,7 +446,11 @@ class Bitacora : ComponentActivity() {
                     text = mensajeRegistro,
                     color = Color(0xFF009e00),
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 16.dp)
+                    fontSize = 18.sp, // Aumentar tamaño de texto
+                    modifier = Modifier
+                        .padding(top = 20.dp)
+                        .fillMaxWidth() // Centrar el texto en todo el ancho disponible
+                        .wrapContentWidth(Alignment.CenterHorizontally) // Centrar el texto
                 )
             }
         }
